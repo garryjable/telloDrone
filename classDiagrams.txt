@@ -1,0 +1,42 @@
+@startuml
+
+mission --> Command : 0..*
+Command o--> ControlCommand
+Command o--> SetCommand
+Command o--> ReadCommand
+
+
+
+class Drone {
+    -str ip
+    -num sendPort
+    -num recievePort
+    +connect()
+    +command()
+    +initiateSDKMode()
+    +get_status()
+
+}
+
+class Command {
+    +execute()
+}
+
+class ControlCommand {
+    +execute(str command)
+}
+
+class SetCommand {
+    +execute(str command)
+}
+
+class ReadCommand {
+    +execute(str command)
+}
+
+class mission {
+    -command_list
+    +execute()
+}
+
+@enduml
