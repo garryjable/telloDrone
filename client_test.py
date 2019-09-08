@@ -2,9 +2,9 @@ import socket
 
 def Main():
     host = '127.0.0.1'
-    port = 5001
+    port = 8890
 
-    server = ('127.0.0.1', 5000)
+    server = ('127.0.0.1', 8889)
 
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.bind((host,port))
