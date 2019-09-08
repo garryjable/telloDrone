@@ -1,40 +1,20 @@
 @startuml
 
-mission --> Command : 0..*
-Command o--> ControlCommand
-Command o--> SetCommand
-Command o--> ReadCommand
+DroneDispatcher --> Mission : 0..*
 
-
-
-class DroneClient {
-    -str ip
-    -num sendPort
-    -num recievePort
-    -send_command()
-    +run_mission(list mission)
-
+class DroneDispatcher {
+    -str host 
+    -num port
+    -num server
+    -obj socket
+    -__init__(str host, num port)
+    -send_command(str command)
+    +execute_mission(mission_name)
 }
 
-class Command {
-    +execute()
-}
-
-class ControlCommand {
-    +execute(str command)
-}
-
-class SetCommand {
-    +execute(str command)
-}
-
-class ReadCommand {
-    +execute(str command)
-}
-
-class mission {
+class Mission {
     -command_list
-    +execute()
+    +get_commands()
 }
 
 @enduml
