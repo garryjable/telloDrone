@@ -1,14 +1,10 @@
 
 
-class Drone():
+class DroneClient():
     ip
     send_port
     recieve_port
 
-    def connect()
+    def send_command()
 
-    def command()
-
-    def initiateSDKMode()
-
-    def get_status()
+    def run_mission()

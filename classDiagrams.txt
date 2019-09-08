@@ -7,14 +7,12 @@ Command o--> ReadCommand
 
 
 
-class Drone {
+class DroneClient {
     -str ip
     -num sendPort
     -num recievePort
-    +connect()
-    +command()
-    +initiateSDKMode()
-    +get_status()
+    -send_command()
+    +run_mission(list mission)
 
 }
 
