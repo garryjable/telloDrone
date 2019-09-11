@@ -15,7 +15,6 @@ class test_drone_dispatcher(unittest.TestCase):
     def test_mission_one(self):
         response = self.dispatcher.execute_mission('1')
         self.assertEqual(response, "you flew mission 1")
-
     
     def test_mission_two(self):
         response = self.dispatcher.execute_mission('2')
@@ -36,3 +35,5 @@ class test_drone_dispatcher(unittest.TestCase):
     def test_missions_model(self):
         print("this is a test")
         self.assertEqual(1, 1)
+
+#class test_client_cli(unittest.TestCase):

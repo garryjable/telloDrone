@@ -14,11 +14,17 @@ class DroneDispatcher {
     -dict _missions
     +__init__(str host, num port)
     +__del__()
-    -_init_missions
     -_send_command()
     +fly_mission(str mission_name)
     +get_mission_names()
+    +set_host()
+    +set_port()
+    +get_info()
 }
+
+class MissionFactory():
+
+    +create_missions(self, mission_data)
 
 class Mission {
     -str _name
@@ -47,6 +53,7 @@ class ClientCli {
 
     +init(str host=None, num drone_port=None)
     -_list_missions()
+    -_get_missions()
     +start_client()
 }
 

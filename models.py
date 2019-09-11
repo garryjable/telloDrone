@@ -4,18 +4,20 @@ from abc import ABC, abstractmethod
 
 class DroneDispatcher:
     _host = '127.0.0.1'
+#    _host = '192.168.10.1'
     _port = 8889
     
 
-    def __init__(self, host=None, port=None):
-        self._init_missions()
+    def __init__(self, missions, host=None, port=None):
+        local_host = ''
+        self._missions = missions
         if host:
             self._host = host 
         if port:
             self._port = port
         self._drone = (self._host, self._port)
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self._socket.bind((self._host, self._port + 1))
+        self._socket.bind((local_host, self._port + 1))
         return
     
     def __del__(self):
@@ -24,23 +26,20 @@ class DroneDispatcher:
         except AttributeError as e:
             return
 
+    def set_host(self, new_host):
+        self._host = new_host
+
+    def set_port(self, new_port):
+        self._port = new_port
+
+    def get_info(self):
+        return (self._host, self._port)
+
     def get_mission_names(self):
         names = []
-        for key, val in self.missions.items():
+        for key, val in self._missions.items():
             names.append(key)
         return names
-
-    def _init_missions(self):
-        import mission_data
-        self._missions = {}
-        for data_obj in mission_data.data:
-            if data_obj['type'] == 'fast':
-                mission = FastMission(data_obj['commands'], data_obj['name'])
-            elif data_obj['type'] == 'slow':
-                mission = SlowMission(data_obj['commands'], data_obj['name'])
-            elif data_obj['type'] == 'verbosefast':
-                mission = VerboseFastMission(data_obj['commands'], data_obj['name'])
-            self._missions[data_obj['name']] = mission
 
     def fly_mission(self, name):
         try:
@@ -53,7 +52,22 @@ class DroneDispatcher:
         self._socket.sendto(command.encode(), self._drone)
         data, addr = self._socket.recvfrom(1024)
         return 'Recieved from server: ' + str(data.decode())
-    
+
+
+class MissionFactory():
+
+   def create_missions(self, mission_data):
+        missions = {}
+        for data_obj in mission_data.data:
+            if data_obj['type'] == 'fast':
+                mission = FastMission(data_obj['commands'], data_obj['name'])
+            elif data_obj['type'] == 'slow':
+                mission = SlowMission(data_obj['commands'], data_obj['name'])
+            elif data_obj['type'] == 'verbosefast':
+                mission = VerboseFastMission(data_obj['commands'], data_obj['name'])
+            missions[data_obj['name']] = mission
+        return missions
+
 
 class Mission(ABC):
     _name = 'default mission'
@@ -98,8 +112,13 @@ class VerboseFastMission(Mission):
 class ClientCli():
     _dispatcher = None
 
-    def __init__(self, host=None, drone_port=None):
-        self._dispatcher = DroneDispatcher(host, drone_port)
+    def _init_dispatcher(self, missions, host=None, drone_port=None):
+        self._dispatcher = DroneDispatcher(missions, host, drone_port)
+
+    def _get_missions(self):
+        import mission_data
+        mission_factory = MissionFactory() 
+        return mission_factory.create_missions(mission_data)
 
     def _list_missions(self):
         print('Availible missions:')
@@ -107,16 +126,32 @@ class ClientCli():
             print('                ' + name)
 
     def start_client(self):
-        print("Welcome to the tello drone client, press q to quit, or enter mission name to fly a mission, enter ls to list possible missions")
+        self._init_dispatcher(self._get_missions())
+        print("Welcome to the tello drone client, enter 'help' for available options, enter 'q' to quit")
         message = input("-> ")
         while message != 'q':
-            if message == 'ls':
+            if message == 'help':
+                print("enter 'q' to quit")
+                print("enter mission name to fly a mission")
+                print("enter 'ls' to list possible missions")
+                print("enter 'set port' to set new port")
+                print("enter 'set host' to set new host")
+                print("enter 'info' to get current host and port data")
+            elif message == 'ls':
                 self._list_missions()
+            elif message == 'set host':
+                print("enter new host address")
+                message = input("-> ")
+                self._dispatcher.set_host(message)
+            elif message == 'set port':
+                message = input("-> ")
+                print("enter new port")
+                self._dispatcher.set_port(message)
+            elif message == 'info':
+                host, port = self.dispatcher.get_info(message)
+                print("current host: " + host)
+                print("current port: " + port)
             else:
                 response = self._dispatcher.fly_mission(message)
                 print(response)
             message = input("-> ")
-
-
-
-
