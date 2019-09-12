@@ -2,17 +2,17 @@ import socket
 import time
 from abc import ABC, abstractmethod
 
+
 class DroneDispatcher:
-    _host = '127.0.0.1'
-#    _host = '192.168.10.1'
+    _host = "127.0.0.1"
+    #    _host = '192.168.10.1'
     _port = 8889
-    
 
     def __init__(self, missions, host=None, port=None):
-        local_host = ''
+        local_host = ""
         self._missions = missions
         if host:
-            self._host = host 
+            self._host = host
         if port:
             self._port = port
         self._drone = (self._host, self._port)
@@ -22,7 +22,7 @@ class DroneDispatcher:
 
     def close_socket(self):
         self._socket.close()
-    
+
     def __del__(self):
         try:
             self._socket.close()
@@ -47,72 +47,71 @@ class DroneDispatcher:
     def fly_mission(self, name):
         try:
             mission = self._missions[name]
-            return mission.execute_commands(self._send_command) 
+            return mission.execute_commands(self._send_command)
         except KeyError as e:
             return "invalid mission"
 
     def _send_command(self, command):
         self._socket.sendto(command.encode(), self._drone)
         data, addr = self._socket.recvfrom(1024)
-        return 'Recieved from server: ' + str(data.decode())
+        return "Recieved from server: " + str(data.decode())
 
 
-class MissionFactory():
-
-   def create_missions(self, mission_data):
+class MissionFactory:
+    def create_missions(self, mission_data):
         missions = {}
         for data_obj in mission_data.data:
-            if data_obj['type'] == 'fast':
-                mission = FastMission(data_obj['commands'], data_obj['name'])
-            elif data_obj['type'] == 'slow':
-                mission = SlowMission(data_obj['commands'], data_obj['name'])
-            elif data_obj['type'] == 'verbosefast':
-                mission = VerboseFastMission(data_obj['commands'], data_obj['name'])
-            missions[data_obj['name']] = mission
+            if data_obj["type"] == "fast":
+                mission = FastMission(data_obj["commands"], data_obj["name"])
+            elif data_obj["type"] == "slow":
+                mission = SlowMission(data_obj["commands"], data_obj["name"])
+            elif data_obj["type"] == "verbosefast":
+                mission = VerboseFastMission(data_obj["commands"], data_obj["name"])
+            missions[data_obj["name"]] = mission
         return missions
 
 
 class Mission(ABC):
-    _name = 'default mission'
+    _name = "default mission"
     _commands = []
-    
+
     def __init__(self, command_list, name):
-        command_list.insert(0, 'takeoff')
-        command_list.insert(0, 'command')
-        command_list.append('land')
+        command_list.insert(0, "takeoff")
+        command_list.insert(0, "command")
+        command_list.append("land")
         self._commands = command_list
         self._name = name
 
     def execute_commands(self, send_method):
-        for command in self._commands:           
-            self._execute_command(command, send_method)                       
-        return 'you flew mission ' + self._name
+        for command in self._commands:
+            self._execute_command(command, send_method)
+        return "you flew mission " + self._name
 
     @abstractmethod
     def _execute_command(self, command, send_method):
         send_method(command)
-        time.sleep(.01)
+        time.sleep(0.01)
+
 
 class FastMission(Mission):
-
     def _execute_command(self, command, send_method):
         send_method(command)
         time.sleep(3)
 
-class SlowMission(Mission):
 
+class SlowMission(Mission):
     def _execute_command(self, command, send_method):
         send_method(command)
         time.sleep(5)
 
-class VerboseFastMission(Mission):
 
+class VerboseFastMission(Mission):
     def _execute_command(self, command, send_method):
         print(send_method(command))
         time.sleep(3)
- 
 
-class ClientCli():
+
+class ClientCli:
     _dispatcher = None
 
     def _init_dispatcher(self, missions, host=None, drone_port=None):
@@ -120,37 +119,40 @@ class ClientCli():
 
     def _get_missions(self):
         import mission_data
-        mission_factory = MissionFactory() 
+
+        mission_factory = MissionFactory()
         return mission_factory.create_missions(mission_data)
 
     def _list_missions(self):
-        print('Availible missions:')
+        print("Availible missions:")
         for name in self._dispatcher.get_mission_names():
-            print('                ' + name)
+            print("                " + name)
 
     def start_client(self):
         self._init_dispatcher(self._get_missions())
-        print("Welcome to the tello drone client, enter 'help' for available options, enter 'q' to quit")
+        print(
+            "Welcome to the tello drone client, enter 'help' for available options, enter 'q' to quit"
+        )
         message = input("-> ")
-        while message != 'q':
-            if message == 'help':
+        while message != "q":
+            if message == "help":
                 print("enter 'q' to quit")
                 print("enter mission name to fly a mission")
                 print("enter 'ls' to list possible missions")
                 print("enter 'set port' to set new port")
                 print("enter 'set host' to set new host")
                 print("enter 'info' to get current host and port data")
-            elif message == 'ls':
+            elif message == "ls":
                 self._list_missions()
-            elif message == 'set host':
+            elif message == "set host":
                 print("enter new host address")
                 message = input("-> ")
                 self._dispatcher.set_host(message)
-            elif message == 'set port':
+            elif message == "set port":
                 message = input("-> ")
                 print("enter new port")
                 self._dispatcher.set_port(message)
-            elif message == 'info':
+            elif message == "info":
                 host, port = self.dispatcher.get_info(message)
                 print("current host: " + host)
                 print("current port: " + port)
