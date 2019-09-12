@@ -1,9 +1,17 @@
 import socket
-from models import DroneDispatcher
-from models import command_line_interface
 
-def start_test_server():
-    command_line_interface()
+host = '127.0.0.1'
+port = 8889 
 
-if __name__ == '__main__':
-    start_test_server()
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.bind((host, port))
+
+print("Server Started")
+while True:
+    data, addr = s.recvfrom(1024)
+    print( "message from: " + str(addr))
+    print( "from connect user: " + str(data.decode()))
+    data = str(data.decode()).upper()
+    print( "sending: " + str(data))
+    s.sendto(data.encode(), addr)
+s.close()

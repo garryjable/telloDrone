@@ -5,6 +5,7 @@ FastMission --|> Mission
 SlowMission --|> Mission
 VerboseFastMission --|> Mission
 ClientCli --> DroneDispatcher
+ClientCli --> MissionFactory
 
 class DroneDispatcher {
     -str _host 
@@ -22,9 +23,11 @@ class DroneDispatcher {
     +get_info()
 }
 
-class MissionFactory():
+class MissionFactory {
 
     +create_missions(self, mission_data)
+
+}
 
 class Mission {
     -str _name

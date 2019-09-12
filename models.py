@@ -19,6 +19,9 @@ class DroneDispatcher:
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._socket.bind((local_host, self._port + 1))
         return
+
+    def close_socket(self):
+        self._socket.close()
     
     def __del__(self):
         try:
