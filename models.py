@@ -97,7 +97,7 @@ class FastMission(Mission):
 
     def _execute_command(self, command, send_method):
         send_method(command)
-        time.sleep(.01)
+        time.sleep(3)
 
 class SlowMission(Mission):
 
@@ -109,7 +109,7 @@ class VerboseFastMission(Mission):
 
     def _execute_command(self, command, send_method):
         print(send_method(command))
-        time.sleep(.01)
+        time.sleep(3)
  
 
 class ClientCli():

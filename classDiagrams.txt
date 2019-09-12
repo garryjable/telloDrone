@@ -17,6 +17,7 @@ class DroneDispatcher {
     +__del__()
     -_send_command()
     +fly_mission(str mission_name)
+    +close_socket()
     +get_mission_names()
     +set_host()
     +set_port()
