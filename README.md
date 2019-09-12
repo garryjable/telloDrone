@@ -38,3 +38,11 @@ Download the plantuml.jar file from `https://plantuml.org/starting`
 Run `java -jar plantuml.jar classdiagrams.txt`
 
 Enjoy the beautiful default styling of beige and maroon!
+
+# Coding standard
+
+The python standard is black.
+
+run `pip install black` 
+
+then run `black a_file.py` to apply it to a file.
